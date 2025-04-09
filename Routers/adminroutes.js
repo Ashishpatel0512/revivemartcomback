@@ -80,7 +80,7 @@ router.put("/admin/approveproduct/:listid",async(req,res)=>{
     
     res.json(
         {
-            success:true,  SuccessMsg:"product update  Successfully!"
+            success:true,  SuccessMsg:"product update  Successfully!",user
         }
     )
 })
@@ -93,7 +93,7 @@ router.put("/admin/rejectproduct/:listid",async(req,res)=>{
 
     res.json(
         {
-            success:true,  SuccessMsg:"product update  Successfully!"
+            success:true,  SuccessMsg:"product update  Successfully!",user
         }
     )
 })

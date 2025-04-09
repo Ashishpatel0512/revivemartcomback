@@ -12,6 +12,7 @@ const multer  = require('multer')
 const {storage}=require("./utility/cloudConfig.js")
 const upload = multer({ storage })
 const Message = require("./models/Message");
+const Notify = require("./models/notification.js")
 const Soket=require("./models/soket.js")
 var cors = require('cors')
 const dataconnection=require('./db.js')
@@ -101,6 +102,18 @@ io.on("connection", async (socket) => {
     }
     await new Message({ sender, receiver, message }).save();
   });
+
+  // notification
+  socket.on("sendnotification", async ({ receiver, message }) => {
+    const receiverUser = await Soket.findOne({ username: receiver });
+    console.log("message", message)
+    if (receiverUser) {
+      io.to(receiverUser.socketId).emit("receivenotification", { receiver:receiver, message:message });
+    }
+    await new Notify({  receiver, message }).save();
+  });
+
+  //
 
   socket.on("disconnect", async () => {
     console.log("❌ User disconnected:", socket.id);

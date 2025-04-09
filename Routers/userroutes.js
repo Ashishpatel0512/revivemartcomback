@@ -20,6 +20,7 @@ const Otp = require("../models/otp.js");
 const sendMail = require("../config/sendmail.js")
 const Ads = require("../models/ads.js");
 const Message = require("../models/Message");
+const Notify = require("../models/notification.js")
 // REGISTER ROUTES
 router.post('/register', wrapAsync(async (req, res) => {
   const { name, emailid, password } = req.body;
@@ -830,5 +831,16 @@ router.get("/notificationtoken/:notificationtoken", pass.authenticate("jwt", { s
     User
   })
 }))
-
+// notification fetch particular user
+router.get("/notification", pass.authenticate("jwt", { session: false }), wrapAsync(async (req, res) => {
+  const user = req.user;
+  console.log(user._id)
+  const Notification = await Notify.find({ receiver: user._id })
+  console.log(Notification)
+  res.json({
+    success: true,
+    Notification
+  })
+}
+))
 module.exports = router
