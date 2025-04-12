@@ -4,6 +4,7 @@ const sendNotification = require('../utility/sendnotification.js')
 const router=express.Router();
 const Users = require('../models/usermodel.js');
 const Listing = require('../models/listingsmodel.js');
+const Ads = require("../models/ads.js");
 require('dotenv').config();
 // const passport = require("../config/passport");
 const wrapAsync = require("../utility/wrapAsyc.js")
@@ -80,7 +81,7 @@ router.put("/admin/approveproduct/:listid",async(req,res)=>{
     
     res.json(
         {
-            success:true,  SuccessMsg:"product update  Successfully!",user
+            success:true,  SuccessMsg:"product update  Successfully!",user,approvepost
         }
     )
 })
@@ -93,7 +94,7 @@ router.put("/admin/rejectproduct/:listid",async(req,res)=>{
 
     res.json(
         {
-            success:true,  SuccessMsg:"product update  Successfully!",user
+            success:true,  SuccessMsg:"product update  Successfully!",user,rejectpost
         }
     )
 })
@@ -121,5 +122,15 @@ router.put("/admin/unblockuser/:userid",async(req,res)=>{
         }
     )
 })
+
+//find ads
+router.get("/admin/ads", wrapAsync(async (req, res) => {
+  const ads = await Ads.find({}).populate("Productid")
+  console.log(ads,".........................................................................................................");
+  res.json({
+    success: true,
+    ads
+  })
+}))
 
 module.exports=router

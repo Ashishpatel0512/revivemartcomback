@@ -13,6 +13,11 @@ const messageSchema = new Schema({
      required: true
      },
   message: { type: String, required: true },
+  status:{
+    type:String,
+    default:"unread"
+  
+  },
   timestamp: { type: Date, default: Date.now },
 });
 

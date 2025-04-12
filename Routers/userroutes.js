@@ -746,11 +746,12 @@ router.get("/groupmessages", async (req, res) =>{
               groupedMessages[chatKey] = { participants: [msg.sender, msg.receiver], messages: [] };
           }
           
-          groupedMessages[chatKey].messages.push({
-              sender: msg.sender,
-              receiver: msg.receiver,
-              text: msg.message,
-              createdAt: msg.createdAt
+        groupedMessages[chatKey].messages.push({
+            msg:msg
+              // sender: msg.sender,
+              // receiver: msg.receiver,
+              // text: msg,
+              // createdAt: msg.createdAt
           });
       });
 
@@ -819,6 +820,19 @@ router.get("/ads", pass.authenticate("jwt", { session: false }), wrapAsync(async
   })
 }))
 
+// find approve ads..
+router.get("/showads",  wrapAsync(async (req, res) => {
+  const ads = await Ads.find({}).populate("Productid")
+  const adsdata = ads.filter(ads => ads.Productid.status === "Approve");
+
+  // console.log(data,".........................................................................................................");
+  res.json({
+    success: true,
+    adsdata
+  })
+}))
+
+
 // set notification token and update user
 router.get("/notificationtoken/:notificationtoken", pass.authenticate("jwt", { session: false }), wrapAsync(async (req, res) => {
   const user = req.user;
@@ -840,6 +854,18 @@ router.get("/notification", pass.authenticate("jwt", { session: false }), wrapAs
   res.json({
     success: true,
     Notification
+  })
+}
+))
+
+// delete notification
+router.delete("/notification/:id", pass.authenticate("jwt", { session: false }), wrapAsync(async (req, res) => {
+  const {id}= req.params;
+  const Notification = await Notify.findByIdAndDelete({_id:id})
+  console.log(Notification)
+  res.json({
+    success: true,
+    SuccessMsg:'delete notification successfully'
   })
 }
 ))

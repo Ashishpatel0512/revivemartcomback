@@ -113,6 +113,11 @@ io.on("connection", async (socket) => {
     await new Notify({  receiver, message }).save();
   });
 
+  socket.on('read', async ({ msgid }) => {
+    console.log(msgid)
+    const msg=await Message.findOneAndUpdate({_id:msgid},{ status:'read'}, { upsert: true })
+    console.log(msg)
+  })
   //
 
   socket.on("disconnect", async () => {
