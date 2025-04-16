@@ -83,8 +83,8 @@ router.put("/admin/approveproduct/:listid",async(req,res)=>{
     //   };
 
     // const response = await admin.messaging().send(message);
-    // console.log("Notification મોકલાઈ ગયું:", response);
-    sendNotification (user?.notificationtoken,'Approve',`Approve your product ${approvepost.name}`)
+    // console.log("Notification મોકલાઈ ગયું:", response);✅ Your car listing has been approved and is now live.
+    sendNotification (user?.notificationtoken,'Approve',`✅ Your ${approvepost.name} listing has been approved and is now live. `)
     
     res.json(
         {
@@ -97,7 +97,7 @@ router.put("/admin/rejectproduct/:listid",async(req,res)=>{
     const rejectpost = await Listing.findByIdAndUpdate({ _id: listid }, { status: "Reject" });
     const user = await Users.findById(rejectpost.User[0]);
 
-    sendNotification (user?.notificationtoken,'Reject',`Reject your product ${rejectpost.name}`)
+    sendNotification (user?.notificationtoken,'Reject',`❌ Your ${rejectpost.name} listing has been rejected. Please review our guidelines and try again.`)
 
     res.json(
         {

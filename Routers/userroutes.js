@@ -20,7 +20,8 @@ const Otp = require("../models/otp.js");
 const sendMail = require("../config/sendmail.js")
 const Ads = require("../models/ads.js");
 const Message = require("../models/Message");
-const Notify = require("../models/notification.js")
+const Notify = require("../models/notification.js");
+const sendNotification = require('../utility/sendnotification.js');
 // REGISTER ROUTES
 router.post('/register', wrapAsync(async (req, res) => {
   const { name, emailid, password } = req.body;
@@ -165,7 +166,16 @@ router.post('/newproduct', pass.authenticate("jwt", { session: false }), upload.
     }
   )
   console.log("HELLO I AM HERE...")
+      const user = await Users.findById({_id:req.user._id}).populate('follwers follwing');
+  console.log("user in followings", user.follwers);
+ 
   list.save().then(() => {
+    user.follwers.map((followers) => {
+      
+      console.log("notification token",followers?.notificationtoken)
+          sendNotification(followers?.notificationtoken,'Approve',`🚗 ${user.name} just added a new ${list.name}– check it out now!`)
+      
+    })
     return res.json({ success: true, SuccessMsg: "post add successfully!" })
   })
 }))
@@ -185,7 +195,7 @@ router.get("/showproducts/:productid", wrapAsync(async (req, res) => {
 }
 ))
 
-router.post("/editproduct/:productid",  upload.fields([{ name: 'image', maxCount: 1 },{name:'imagetwo',maxCount:1},{name:'imagethree',maxCount:1},{name:'imagefour',maxCount:1}]),wrapAsync(async (req, res) => {
+router.post("/editproduct/:productid",  pass.authenticate("jwt", { session: false }), upload.fields([{ name: 'image', maxCount: 1 },{name:'imagetwo',maxCount:1},{name:'imagethree',maxCount:1},{name:'imagefour',maxCount:1}]),wrapAsync(async (req, res) => {
   let { name, description, price, age,latitude,longitude, catagory, other } = req.body;
   console.log(name, description, price, age, latitude, longitude, catagory, other)
  
@@ -194,8 +204,8 @@ router.post("/editproduct/:productid",  upload.fields([{ name: 'image', maxCount
   const { productid } = req.params;
 
   let inputData = { name, description, price, age,location:{ latitude, longitude },catagory, other };
-  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',req.files.imagetwo)
-let product = {};
+  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',req.files.imagetwo)
+let product = {status:'update'};
 
 for (let key in inputData) {
     if (inputData[key] !== undefined && inputData[key] !== "") {
@@ -211,18 +221,22 @@ console.log("Filtered Product:", product);
     new: true,
   })
   console.log("posts.....", post);
-  post.image[0].url = req.files.image[0].path;
-  post.image[0].filename = req.files.image[0].filename;
-
-  post.image[1].url = req.files.imagetwo[0].path;
-  post.image[1].filename = req.files.imagetwo[0].filename;
-  
-  post.image[2].url = req.files.imagethree[0].path;
-  post.image[2].filename = req.files.imagethree[0].filename;
-
-  post.image[3].url = req.files.imagefour[0].path;
-  post.image[3].filename = req.files.imagefour[0].filename;
-
+  if (req?.files?.image) {
+    post.image[0].url = req?.files?.image[0]?.path;
+    post.image[0].filename = req?.files?.image[0]?.filename;
+  }
+  if (req?.files?.imagetwo) {
+    post.image[1].url = req?.files?.imagetwo[0]?.path;
+    post.image[1].filename = req?.files?.imagetwo[0]?.filename;
+  }
+  if (req?.files?.imagethree) {
+    post.image[2].url = req?.files?.imagethree[0]?.path;
+    post.image[2].filename = req?.files?.imagethree[0]?.filename;
+  }
+  if (req?.files?.imagefour) {
+    post.image[3].url = req?.files?.imagefour[0]?.path;
+    post.image[3].filename = req?.files?.imagefour[0]?.filename;
+  }
   post.save();
 
   if (!post) {
