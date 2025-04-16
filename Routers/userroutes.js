@@ -185,14 +185,16 @@ router.get("/showproducts/:productid", wrapAsync(async (req, res) => {
 }
 ))
 
-router.post("/editproduct/:productid", pass.authenticate("jwt", { session: false }), wrapAsync(async (req, res) => {
-  let { name, description, price, age,location, catagory, other } = req.body;
-  console.log(name, description, price, age, location, catagory, other)
+router.post("/editproduct/:productid",  upload.fields([{ name: 'image', maxCount: 1 },{name:'imagetwo',maxCount:1},{name:'imagethree',maxCount:1},{name:'imagefour',maxCount:1}]),wrapAsync(async (req, res) => {
+  let { name, description, price, age,latitude,longitude, catagory, other } = req.body;
+  console.log(name, description, price, age, latitude, longitude, catagory, other)
+ 
+  
   console.log(req.user);
   const { productid } = req.params;
 
-  let inputData = { name, description, price, age, location, catagory, other };
-
+  let inputData = { name, description, price, age,location:{ latitude, longitude },catagory, other };
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',req.files.imagetwo)
 let product = {};
 
 for (let key in inputData) {
@@ -205,17 +207,34 @@ console.log("Filtered Product:", product);
   // if ([name, description, price, age, location, catagory, other].some((data) => data == undefined || data.trim() == "")) {
   //   return res.json({ success: false, ErrorMsg: "some field are empty please fill now!" })
   // }
-  const post = await Listing.findByIdAndUpdate({ _id: productid }, product, {
+  const post = await Listing.findByIdAndUpdate({ _id: productid  }, product , {
     new: true,
-  }).then((data) => {
-    console.log(data)
-    if (data == null) {
+  })
+  console.log("posts.....", post);
+  post.image[0].url = req.files.image[0].path;
+  post.image[0].filename = req.files.image[0].filename;
+
+  post.image[1].url = req.files.imagetwo[0].path;
+  post.image[1].filename = req.files.imagetwo[0].filename;
+  
+  post.image[2].url = req.files.imagethree[0].path;
+  post.image[2].filename = req.files.imagethree[0].filename;
+
+  post.image[3].url = req.files.imagefour[0].path;
+  post.image[3].filename = req.files.imagefour[0].filename;
+
+  post.save();
+
+  if (!post) {
+  
+   
+
       return res.json({ success: false, ErrorMsg: "This product is not Availble!" })
     }
     else {
       return res.json({ success: true, SuccessMsg: "product updaates Successfully!" })
     }
-  })
+
 
 }))
 
@@ -231,7 +250,6 @@ router.get("/delete/:id", pass.authenticate("jwt", { session: false }), wrapAsyn
   }
   else {
     return res.json({ success: false, ErrorMsg: "This post is not Availble!" })
-
   }
 }))
 
@@ -329,7 +347,7 @@ router.post("/editprofile", pass.authenticate("jwt", { session: false }), wrapAs
   }
   const users = await Users.findOne({ emailid });
   console.log("CHECK USER", users);
-  if (users.emailid !== user.emailid && users) {
+  if (users?.emailid !== user?.emailid && users) {
     return res.json({ success: false, ErrorMsg: "THIS EMAILID IS ALREDY EXITS!" })
 
   }
