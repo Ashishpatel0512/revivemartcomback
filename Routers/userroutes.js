@@ -303,7 +303,7 @@ router.get("/showproducts", wrapAsync(async (req, res) => {
   const products = await Listing.find({
     $and: [
       { status: "Approve" },
-      { $or: orConditions }
+      { $and: orConditions }
     ]
     // $or: [
     //   filters
