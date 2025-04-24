@@ -854,7 +854,7 @@ router.get("/ads", pass.authenticate("jwt", { session: false }), wrapAsync(async
 
 // find approve ads..
 router.get("/showads",  wrapAsync(async (req, res) => {
-  const ads = await Ads.find({}).populate("Productid")
+  const ads = await Ads.find({status:'Approve'}).populate("Productid")
   const adsdata = ads.filter(ads => ads.Productid.status === "Approve");
 
   // console.log(data,".........................................................................................................");

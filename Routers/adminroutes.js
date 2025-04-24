@@ -139,5 +139,27 @@ router.get("/admin/ads", wrapAsync(async (req, res) => {
     ads
   })
 }))
+//promotion manage
+router.put("/admin/rejectads/:adsid",async(req,res)=>{
+    const {adsid}=req.params;
+    const rejectpost = await Ads.findByIdAndUpdate({ _id: adsid }, { status: "Reject" });
 
+
+    res.json(
+        {
+            success:true,  SuccessMsg:"ads update  Successfully!",rejectpost
+        }
+    )
+})
+router.put("/admin/approveads/:adsid",async(req,res)=>{
+    const {adsid}=req.params;
+    const approvepost = await Ads.findByIdAndUpdate({ _id: adsid }, { status: "Approve" });
+
+
+    res.json(
+        {
+            success:true,  SuccessMsg:"ads update  Successfully!",approvepost
+        }
+    )
+})
 module.exports=router
