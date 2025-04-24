@@ -20,7 +20,8 @@ const userSchema = new Schema({
         default:"Active"
 
       },
-      role: {
+  role: {
+        
         type:String,
         default:"User"
   },

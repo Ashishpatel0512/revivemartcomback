@@ -15,8 +15,14 @@ admin.initializeApp({
         token:token , // User નો Firebase token
       };
 
- const response = await admin.messaging().send(message);
-     console.log("Notification મોકલાઈ ગયું:", response);
+   try {
+    const response = await admin.messaging().send(message);
+    console.log("Notification મોકલાઈ ગયું:", response);
+   } catch (error) {
+    console.log("notify error........",error)
+   }
+//  const response = await admin.messaging().send(message);
+//      console.log("Notification મોકલાઈ ગયું:", response);
 }
 
 module.exports = sendNotification;
